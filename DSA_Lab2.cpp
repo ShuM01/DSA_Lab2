@@ -15,7 +15,7 @@ next = nullptr;
 };
 
 // Insert a new user
-bool insertUser(User*& head, const string& username, const string& password, const vector& permissions = {"view"}) {
+bool insertUser(User*& head, const string& username, const string& password, const vector& permissions) {
 User* current = head;
 while (current) {
 if (current->username == username) return false;
@@ -23,11 +23,12 @@ current = current->next;
 }
 
 User* newUser = new User(username, password, permissions);
-if (!head) head = newUser;
-else {
-current = head;
-while (current->next) current = current->next;
-current->next = newUser;
+if (!head) {
+head = newUser;
+} else {
+User* tail = head;
+while (tail->next) tail = tail->next;
+tail->next = newUser;
 }
 return true;
 }
@@ -118,6 +119,7 @@ head = head->next;
 return count;
 }
 
+
 int main() {
 User* head = nullptr;
 int choice;
@@ -207,6 +209,6 @@ cout << "Invalid option. Try again.\n";
 
 } while (choice != 0);
 
-clearList(head);
+clearList(head); // Final cleanup
 return 0;
 }
