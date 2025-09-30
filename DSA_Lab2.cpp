@@ -136,6 +136,14 @@ string trim(const string& s) {
     return (start == string::npos) ? "" : s.substr(start, end - start + 1);
 }
 
+// Update user permissions
+bool updatePermissions(User* head, const string& username, const vector<string>& newPermissions) {
+    User* user = findUser(head, username);
+    if (!user) return false;
+    user->permissions = newPermissions;
+    return true;
+}
+
 int main() {
     User* head = nullptr;
     int choice;
@@ -149,6 +157,7 @@ int main() {
         cout << "5. Remove User\n";
         cout << "6. Clear List\n";
         cout << "7. Show Size\n";
+        cout << "8. Update Permissions\n";
         cout << "0. Exit\n";
         cout << "Choose an option: ";
         cin >> choice;
@@ -221,6 +230,28 @@ int main() {
 
         case 7: {
             cout << "Size of list: " << listSize(head) << endl;
+            break;
+        }
+
+        case 8: {
+            cout << "Enter username to update: ";
+            getline(cin, username);
+            cout << "Enter new permissions (comma-separated, e.g., view,edit): ";
+            getline(cin, permInput);
+            permissions.clear();
+
+            size_t pos = 0;
+            while ((pos = permInput.find(',')) != string::npos) {
+                permissions.push_back(trim(permInput.substr(0, pos)));
+                permInput.erase(0, pos + 1);
+            }
+            if (!permInput.empty()) permissions.push_back(trim(permInput));
+            if (permissions.empty()) permissions.push_back("view");
+
+            if (updatePermissions(head, username, permissions))
+                cout << "Permissions updated.\n";
+            else
+                cout << "User not found.\n";
             break;
         }
 
