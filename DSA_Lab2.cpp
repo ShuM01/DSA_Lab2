@@ -45,7 +45,12 @@ void printUsers(User* head) {
         return;
     }
     while (head) {
-        cout << head->username << " -> ";
+        cout << head->username << " (permissions: ";
+        for (size_t i = 0; i < head->permissions.size(); i++) {
+            cout << head->permissions[i];
+            if (i + 1 < head->permissions.size()) cout << ", ";
+        }
+        cout << ") -> ";
         head = head->next;
     }
     cout << "NULL" << endl;
@@ -115,7 +120,7 @@ void clearList(User*& head) {
 }
 
 // Count users
-int size(User* head) {
+int listSize(User* head) {
     int count = 0;
     while (head) {
         count++;
@@ -124,6 +129,12 @@ int size(User* head) {
     return count;
 }
 
+// Helper to trim spaces
+string trim(const string& s) {
+    size_t start = s.find_first_not_of(" \t");
+    size_t end   = s.find_last_not_of(" \t");
+    return (start == string::npos) ? "" : s.substr(start, end - start + 1);
+}
 
 int main() {
     User* head = nullptr;
@@ -141,14 +152,14 @@ int main() {
         cout << "0. Exit\n";
         cout << "Choose an option: ";
         cin >> choice;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Corrected usage of numeric_limits
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         string username, password, action;
         vector<string> permissions;
         string permInput;
 
         switch (choice) {
-        case 1:
+        case 1: {
             cout << "Enter username: ";
             getline(cin, username);
             cout << "Enter password: ";
@@ -156,61 +167,71 @@ int main() {
             cout << "Enter permissions (comma-separated, e.g., view,edit): ";
             getline(cin, permInput);
             permissions.clear();
+
             size_t pos = 0;
-            // The original loop for parsing permissions is correct once types are defined
             while ((pos = permInput.find(',')) != string::npos) {
-                permissions.push_back(permInput.substr(0, pos));
+                permissions.push_back(trim(permInput.substr(0, pos)));
                 permInput.erase(0, pos + 1);
             }
-            if (!permInput.empty()) permissions.push_back(permInput);
+            if (!permInput.empty()) permissions.push_back(trim(permInput));
+            if (permissions.empty()) permissions.push_back("view");
 
             if (insertUser(head, username, password, permissions))
                 cout << "User inserted.\n";
             else
                 cout << "Username already exists.\n";
             break;
+        }
 
-        case 2:
+        case 2: {
             printUsers(head);
             break;
+        }
 
-        case 3:
+        case 3: {
             cout << "Enter username: ";
             getline(cin, username);
             cout << "Enter password: ";
             getline(cin, password);
             cout << (authenticate(head, username, password) ? "Authentication successful.\n" : "Authentication failed.\n");
             break;
+        }
 
-        case 4:
+        case 4: {
             cout << "Enter username: ";
             getline(cin, username);
             cout << "Enter action to authorize (e.g., view, edit, create): ";
             getline(cin, action);
             cout << (authorize(head, username, action) ? "Action authorized.\n" : "Action denied.\n");
             break;
+        }
 
-        case 5:
+        case 5: {
             cout << "Enter username to remove: ";
             getline(cin, username);
             cout << (removeByUsername(head, username) ? "User removed.\n" : "User not found.\n");
             break;
+        }
 
-        case 6:
+        case 6: {
             clearList(head);
             cout << "List cleared.\n";
             break;
+        }
 
-        case 7:
-            cout << "Size of list: " << size(head) << endl;
+        case 7: {
+            cout << "Size of list: " << listSize(head) << endl;
             break;
+        }
 
-        case 0:
+        case 0: {
             cout << "Exiting program.\n";
             break;
+        }
 
-        default:
+        default: {
             cout << "Invalid option. Try again.\n";
+        }
         }
 
     } while (choice != 0);
