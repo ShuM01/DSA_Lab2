@@ -1,8 +1,8 @@
-#include <iostream>   // For cin, cout, endl
-#include <string>     // For string, getline, find
-#include <vector>     // For vector
-#include <limits>     // For numeric_limits
-#include <cstddef>    // For size_t
+#include <iostream>
+#include <string>
+#include <vector>
+#include <limits>
+#include <cstddef>
 using namespace std;
 
 struct User {
